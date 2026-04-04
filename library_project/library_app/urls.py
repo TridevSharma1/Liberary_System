@@ -7,9 +7,5 @@ urlpatterns = [
     path('add-book/', views.add_book, name='add_book'),
     path('issue-book/', views.issue_book, name='issue_book'),
     path('student/<int:student_id>/', views.student_detail, name='student_detail'),
-  
-   
-    
-    
+    path('search-student/', views.search_student, name='search_student'),
 ]
-handler404 = 'your_app_name.views.custom_404'

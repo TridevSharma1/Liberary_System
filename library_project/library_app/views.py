@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
+from django.db.models import Q
 from .models import Student, Book, IssueBook
-from .forms import StudentForm, BookForm, IssueBookForm
+from .forms import StudentForm, BookForm, IssueBookForm, StudentSearchForm
 
 def home(request):
     return render(request, 'home.html')
@@ -58,5 +59,23 @@ def issue_list(request):
     issues = IssueBook.objects.all()
     return render(request, 'student_detail.html', {'issues': issues})
 
-from django.shortcuts import redirect, get_object_or_404
+def search_student(request):
+    form = StudentSearchForm(request.GET or None)
+    students = []
+    
+    if form.is_valid() and request.GET.get('search_query'):
+        search_query = form.cleaned_data['search_query']
+        # Search by name or roll number (case-insensitive)
+        students = Student.objects.filter(
+            Q(name__icontains=search_query) | 
+            Q(roll_no__icontains=search_query)
+        )
+    else:
+        # Show all students by default
+        students = Student.objects.all()
+    
+    return render(request, 'search_student.html', {
+        'form': form,
+        'students': students
+    })
 

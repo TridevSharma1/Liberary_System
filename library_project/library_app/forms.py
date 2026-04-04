@@ -32,3 +32,13 @@ class IssueBookForm(forms.ModelForm):
             'book': forms.Select(attrs={'class': 'form-control'}),
             'return_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
         }
+
+class StudentSearchForm(forms.Form):
+    search_query = forms.CharField(
+        max_length=100,
+        required=True,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Search by name or roll number...'
+        })
+    )

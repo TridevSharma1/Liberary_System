@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Search Student</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .search-box {
+            margin-bottom: 30px;
+        }
+        .student-list {
+            margin-top: 30px;
+        }
+        .student-card {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .student-card:hover {
+            background-color: #f0f0f0;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .student-name {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+        }
+        .student-info {
+            color: #666;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+        }
+        .btn-home {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="{% url 'home' %}" class="btn btn-secondary btn-home">← Back to Home</a>
+        
+        <h1>Search Student Details</h1>
+        
+        <div class="search-box">
+            <form method="get" class="needs-validation">
+                <div class="input-group">
+                    {{ form.search_query }}
+                    <button class="btn btn-primary" type="submit">Search</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="student-list">
+            {% if students %}
+                <h5>
+                    {% if form.is_valid and form.cleaned_data.search_query %}
+                        Found {{ students.count }} student(s) matching "{{ form.cleaned_data.search_query }}":
+                    {% else %}
+                        All Students ({{ students.count }}):
+                    {% endif %}
+                </h5>
+                {% for student in students %}
+                    <a href="{% url 'student_detail' student.id %}" style="text-decoration: none;">
+                        <div class="student-card">
+                            <div class="student-name">{{ student.name }}</div>
+                            <div class="student-info">
+                                <strong>Roll No:</strong> {{ student.roll_no }}<br>
+                                <strong>Email:</strong> {{ student.email }}<br>
+                                <strong>Phone:</strong> {{ student.phone }}
+                            </div>
+                        </div>
+                    </a>
+                {% endfor %}
+            {% elif form.is_valid and form.cleaned_data.search_query %}
+                <div class="alert alert-warning" role="alert">
+                    No students found matching "{{ form.cleaned_data.search_query }}"
+                </div>
+            {% else %}
+                <div class="alert alert-info" role="alert">
+                    No students in the system yet.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

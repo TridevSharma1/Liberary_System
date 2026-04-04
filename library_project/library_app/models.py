@@ -44,10 +44,3 @@ class IssueBook(models.Model):
 
     def __str__(self):
         return f"{self.student} - {self.book}"
-
-class Issue(models.Model):
-    student = models.ForeignKey(Student, on_delete=models.CASCADE)
-    book = models.CharField(max_length=100)
-    issue_date = models.DateField()
-    return_date = models.DateField(null=True, blank=True)
-    is_returned = models.BooleanField(default=False)  # 👈 IMPORTANT

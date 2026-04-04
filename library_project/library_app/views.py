@@ -1,7 +1,6 @@
 from django.shortcuts import render, redirect
 from .models import Student, Book, IssueBook
 from .forms import StudentForm, BookForm, IssueBookForm
-from .models import Issue
 
 def home(request):
     return render(request, 'home.html')
@@ -56,7 +55,7 @@ def student_detail(request, student_id):
 
 
 def issue_list(request):
-    issues = Issue.objects.all()
+    issues = IssueBook.objects.all()
     return render(request, 'student_detail.html', {'issues': issues})
 
 from django.shortcuts import redirect, get_object_or_404

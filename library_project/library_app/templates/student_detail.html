@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Student Details</title>
+
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #f4f6f9;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+        }
+
+        .card {
+            background: #fff;
+            padding: 25px 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+            margin-bottom: 25px;
+        }
+
+        h2 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .student-info p {
+            margin: 8px 0;
+            font-size: 15px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        table th,
+        table td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+
+        table th {
+            background: #667eea;
+            color: white;
+        }
+
+        table tr:hover {
+            background: #f1f1f1;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 15px;
+            color: #888;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <!-- Student Info -->
+        <div class="card">
+            <h2>🎓 Student Details</h2>
+
+            <div class="student-info">
+                <p><strong>Name:</strong> {{ student.name }}</p>
+                <p><strong>Email:</strong> {{ student.email }}</p>
+                <p><strong>Phone:</strong> {{ student.phone }}</p>
+                <p><strong>Roll No:</strong> {{ student.roll_no }}</p>
+                <p><strong>Student ID:</strong> {{ student.id }}</p>
+            </div>
+        </div>
+
+        <!-- Issued Books -->
+        <div class="card">
+            <h2>📚 Issued Books</h2>
+
+            <table>
+                <tr>
+                    <th>Book Name</th>
+                    <th>Issue Date</th>
+                    <th>Return Date</th>
+                    <th>Status</th>
+                </tr>
+
+                {% for issue in issued_books %}
+                <tr>
+                    <td>{{ issue.book.title }}</td>
+                    <td>{{ issue.issue_date }}</td>
+                    <td>{{ issue.return_date }}</td>
+
+                    <td>
+                        {% if issue.is_returned %}
+                        <span style="color: green; font-weight: bold;">Returned ✅</span>
+                        {% else %}
+                        <span style="color: red; font-weight: bold;">Return Pending ❌</span>
+                        {% endif %}
+                    </td>
+
+                    <!-- ✅ ADD THIS COLUMN -->
+                
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" class="no-data">No books issued</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+
+    </div>
+
+</body>
+
+</html>

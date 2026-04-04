@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Library System</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: white;
+            padding: 40px 50px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            text-align: center;
+            width: 350px;
+        }
+
+        h1 {
+            margin-bottom: 30px;
+            color: #333;
+        }
+
+        .menu a {
+            display: block;
+            text-decoration: none;
+            background: #667eea;
+            color: white;
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: 0.3s;
+        }
+
+        .menu a:hover {
+            background: #5a67d8;
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+    <h1>📚 Library System</h1>
+
+    <div class="menu">
+        <a href="/add-student/">🎓 Add Student</a>
+        <a href="/add-book/">📘 Add Book</a>
+        <a href="/issue-book/">📖 Issue Book</a>
+        <a href="/student/1/">👤 Student Details</a>
+    </div>
+</div>
+
+</body>
+</html>

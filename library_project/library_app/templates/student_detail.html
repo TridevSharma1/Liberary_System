@@ -121,6 +121,7 @@
                     <th>Issue Date</th>
                     <th>Return Date</th>
                     <th>Status</th>
+                    <th>Actions</th>
                 </tr>
 
                 {% for issue in issued_books %}
@@ -137,12 +138,16 @@
                         {% endif %}
                     </td>
 
-                    <!-- ✅ ADD THIS COLUMN -->
+                    <td>
+                        {% if not issue.is_returned %}
+                        <a href="{% url 'return_book' issue.id %}" class="btn btn-primary" style="padding: 5px 10px; background: #28a745; color: white; text-decoration: none; border-radius: 4px;">Mark Returned</a>
+                        {% endif %}
+                    </td>
                 
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="4" class="no-data">No books issued</td>
+                    <td colspan="5" class="no-data">No books issued</td>
                 </tr>
                 {% endfor %}
             </table>

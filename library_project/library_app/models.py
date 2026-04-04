@@ -41,6 +41,7 @@ class IssueBook(models.Model):
     book = models.ForeignKey(Book, on_delete=models.CASCADE)
     issue_date = models.DateField(auto_now_add=True)
     return_date = models.DateField(null=True, blank=True)
+    is_returned = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.student} - {self.book}"

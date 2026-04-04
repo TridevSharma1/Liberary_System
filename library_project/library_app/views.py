@@ -55,6 +55,16 @@ def student_detail(request, student_id):
     })
 
 
+def return_book(request, issue_id):
+    issue = IssueBook.objects.get(id=issue_id)
+    if not issue.is_returned:
+        issue.is_returned = True
+        issue.book.available = True
+        issue.book.save()
+        issue.save()
+    return redirect('student_detail', student_id=issue.student.id)
+
+
 def issue_list(request):
     issues = IssueBook.objects.all()
     return render(request, 'student_detail.html', {'issues': issues})

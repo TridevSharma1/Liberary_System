@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.db.models import Q
 from .models import Student, Book, IssueBook
 from .forms import StudentForm, BookForm, IssueBookForm, StudentSearchForm
+from django.contrib import messages
 
 def home(request):
     return render(request, 'home.html')
@@ -10,7 +11,8 @@ def home(request):
 def add_student(request):
     form = StudentForm(request.POST or None)
     if form.is_valid():
-        form.save()
+        student = form.save()
+        messages.success(request, f'✓ Student "{student.name}" has been added successfully!')
         return redirect('home')
     return render(request, 'add_student.html', {'form': form})
 
@@ -18,7 +20,8 @@ def add_student(request):
 def add_book(request):
     form = BookForm(request.POST or None)
     if form.is_valid():
-        form.save()
+        book = form.save()
+        messages.success(request, f'✓ Book "{book.title}" has been added successfully! (Quantity: {book.total_quantity})')
         return redirect('home')
     return render(request, 'add_book.html', {'form': form})
 
@@ -35,13 +38,24 @@ def issue_book(request):
         if not issue.return_date:
             issue.return_date = date.today() + timedelta(days=7)
 
-        issue.save()
-
-        # Mark book unavailable
-        issue.book.available = False
-        issue.book.save()
-
-        return redirect('home')
+        # Attempt to issue the book and decrease quantity
+        if issue.book.issue_book():
+            issue.save()
+            messages.success(request, f'✓ Book "{issue.book.title}" has been issued to {issue.student.name}. Return by: {issue.return_date}')
+            return redirect('home')
+        else:
+            messages.error(request, f'✗ Book "{issue.book.title}" is not available. No copies left in stock.')
+            form.add_error('book', 'This book is not available. No copies left in stock.')
+    else:
+        # Display validation errors as warning messages
+        for field, errors in form.errors.items():
+            for error in errors:
+                if 'not available' in error.lower() or 'no copies' in error.lower():
+                    messages.error(request, f'✗ {error}')
+                elif 'unreturned' in error.lower() or 'already has' in error.lower():
+                    messages.warning(request, f'⚠ {error}')
+                else:
+                    messages.error(request, f'❌ {error}')
 
     return render(request, 'library_app/issue_book.html', {'form': form})
 
@@ -59,9 +73,10 @@ def return_book(request, issue_id):
     issue = IssueBook.objects.get(id=issue_id)
     if not issue.is_returned:
         issue.is_returned = True
-        issue.book.available = True
-        issue.book.save()
         issue.save()
+        # Increase available quantity using the model method
+        issue.book.return_book()
+        messages.success(request, f'✓ Book "{issue.book.title}" has been returned by {issue.student.name}.')
     return redirect('student_detail', student_id=issue.student.id)
 
 

@@ -1,0 +1,8 @@
+/library_app/__pycache__/
+/library_app/migrations/__pycache__/
+/library_app/static/
+/library_app/models.py
+/library_app/views.py
+/library_project/admin.py
+/library_project/settings.py
+/library_project/urls.py

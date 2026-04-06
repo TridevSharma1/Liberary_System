@@ -3,13 +3,21 @@ from django.contrib.auth.models import User
 
 # Student Model
 class Student(models.Model):
+    CLASS_CHOICES = [(i, str(i)) for i in range(6, 13)]
+    SECTION_CHOICES = [('A', 'A'), ('B', 'B'), ('C', 'C'), ('D', 'D')]
+    
     name = models.CharField(max_length=100)
-    roll_no = models.CharField(max_length=20, unique=True)
+    roll_no = models.CharField(max_length=20)
     email = models.EmailField()
     phone = models.CharField(max_length=15)
-
+    class_number = models.IntegerField(choices=CLASS_CHOICES, default=6)
+    section = models.CharField(max_length=1, choices=SECTION_CHOICES, default='A')
+    
+    class Meta:
+        unique_together = ('class_number', 'section', 'roll_no')
+    
     def __str__(self):
-        return self.name
+        return f"{self.name} - Class {self.class_number}{self.section} - Roll {self.roll_no}"
 
 class Profile(models.Model):
     ROLE_CHOICES = (

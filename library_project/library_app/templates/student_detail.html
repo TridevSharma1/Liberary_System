@@ -197,7 +197,13 @@
                 <p><strong>Email:</strong> {{ student.email }}</p>
                 <p><strong>Phone:</strong> {{ student.phone }}</p>
                 <p><strong>Roll No:</strong> {{ student.roll_no }}</p>
+                <p><strong>Class:</strong> {{ student.class_number }}{{ student.section }}</p>
                 <p><strong>Student ID:</strong> {{ student.id }}</p>
+            </div>
+            
+            <div style="margin-top: 20px;">
+                <a href="{% url 'update_student' student.id %}" class="btn btn-primary" style="padding: 8px 16px; background: var(--primary-color); color: white; text-decoration: none; border-radius: 4px; margin-right: 10px;">Update Student</a>
+                <a href="{% url 'delete_student' student.id %}" class="btn btn-danger" style="padding: 8px 16px; background: var(--error-color); color: white; text-decoration: none; border-radius: 4px;">Delete Student</a>
             </div>
         </div>
 

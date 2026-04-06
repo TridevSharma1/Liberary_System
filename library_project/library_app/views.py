@@ -5,6 +5,7 @@ from .forms import StudentForm, BookForm, IssueBookForm, StudentSearchForm
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.core.mail import send_mail
+import json
 
 def home(request):
     return render(request, 'home.html')
@@ -17,6 +18,37 @@ def add_student(request):
         messages.success(request, f'✓ Student "{student.name}" has been added successfully!')
         return redirect('home')
     return render(request, 'add_student.html', {'form': form})
+
+
+def update_student(request, student_id):
+    try:
+        student = Student.objects.get(id=student_id)
+    except Student.DoesNotExist:
+        messages.error(request, 'Student not found.')
+        return redirect('search_student')
+    
+    form = StudentForm(request.POST or None, instance=student)
+    if form.is_valid():
+        student = form.save()
+        messages.success(request, f'✓ Student "{student.name}" has been updated successfully!')
+        return redirect('student_detail', student_id=student.id)
+    return render(request, 'add_student.html', {'form': form, 'student': student})
+
+
+def delete_student(request, student_id):
+    try:
+        student = Student.objects.get(id=student_id)
+    except Student.DoesNotExist:
+        messages.error(request, 'Student not found.')
+        return redirect('search_student')
+    
+    if request.method == 'POST':
+        student_name = student.name
+        student.delete()
+        messages.success(request, f'✓ Student "{student_name}" has been deleted successfully!')
+        return redirect('search_student')
+    
+    return render(request, 'delete_student.html', {'student': student})
 
 
 def add_book(request):
@@ -80,7 +112,9 @@ def issue_book(request):
                 else:
                     messages.error(request, f'❌ {error}')
 
-    return render(request, 'library_app/issue_book.html', {'form': form})
+    students_data = list(Student.objects.values('id', 'name', 'class_number', 'section', 'roll_no'))
+    students_json = json.dumps(students_data)
+    return render(request, 'library_app/issue_book.html', {'form': form, 'students_json': students_json})
 
 def student_detail(request, student_id):
     try:

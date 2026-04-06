@@ -113,6 +113,13 @@
         <label>{{ form.student.label }}</label>
         {{ form.student }}
 
+        <div id="student-details" style="margin-bottom: 15px; padding: 10px; background-color: #f8f9fa; border-radius: 6px; display: none;">
+            <strong>Student Details:</strong><br>
+            <span id="student-name"></span><br>
+            <span id="student-class"></span><br>
+            <span id="student-roll"></span>
+        </div>
+
         <label>{{ form.book.label }}</label>
         {{ form.book }}
 
@@ -124,6 +131,31 @@
         <a href="{% url 'home' %}" class="btn btn-secondary btn-home">← Back to Home</a>
     </form>
 </div>
+
+<script>
+    const studentSelect = document.querySelector('select[name="student"]');
+    const studentDetails = document.getElementById('student-details');
+    const studentName = document.getElementById('student-name');
+    const studentClass = document.getElementById('student-class');
+    const studentRoll = document.getElementById('student-roll');
+
+    const students = JSON.parse('{{ students_json|safe }}');
+
+    studentSelect.addEventListener('change', function() {
+        const selectedId = this.value;
+        if (selectedId) {
+            const student = students.find(s => s.id == selectedId);
+            if (student) {
+                studentName.textContent = `Name: ${student.name}`;
+                studentClass.textContent = `Class: ${student.class_number}${student.section}`;
+                studentRoll.textContent = `Roll No: ${student.roll_no}`;
+                studentDetails.style.display = 'block';
+            }
+        } else {
+            studentDetails.style.display = 'none';
+        }
+    });
+</script>
 
 </body>
 </html>

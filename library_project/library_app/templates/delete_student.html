@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Delete Student</title>
+
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #dfe9f3, #ffffff);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .card {
+            background: #fff;
+            padding: 35px 45px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            width: 420px;
+            text-align: center;
+        }
+
+        h2 {
+            margin-bottom: 25px;
+            color: #2c3e50;
+        }
+
+        p {
+            margin-bottom: 25px;
+            color: #666;
+        }
+
+        .student-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            text-align: left;
+        }
+
+        .student-info p {
+            margin: 5px 0;
+            font-size: 14px;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .delete-btn {
+            background: linear-gradient(135deg, #dc3545, #c82333);
+            color: #fff;
+        }
+
+        .delete-btn:hover {
+            background: linear-gradient(135deg, #c82333, #a02622);
+        }
+
+        .cancel-btn {
+            background: #6c757d;
+            color: #fff;
+        }
+
+        .cancel-btn:hover {
+            background: #5a6268;
+        }
+
+        .back-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            padding: 10px 20px;
+            background: #6c63ff;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: 0.3s;
+            font-weight: 600;
+        }
+
+        .back-button:hover {
+            background: #5a54d1;
+        }
+    </style>
+</head>
+
+<body>
+{% include 'messages.html' %}
+
+<div class="card">
+    <h2>🗑️ Delete Student</h2>
+
+    <p>Are you sure you want to delete this student? This action cannot be undone.</p>
+
+    <div class="student-info">
+        <p><strong>Name:</strong> {{ student.name }}</p>
+        <p><strong>Email:</strong> {{ student.email }}</p>
+        <p><strong>Phone:</strong> {{ student.phone }}</p>
+        <p><strong>Roll No:</strong> {{ student.roll_no }}</p>
+        <p><strong>Class:</strong> {{ student.class_number }}{{ student.section }}</p>
+        <p><strong>Student ID:</strong> {{ student.id }}</p>
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="buttons">
+            <button type="submit" class="delete-btn">Yes, Delete Student</button>
+            <a href="{% url 'student_detail' student.id %}" class="cancel-btn" style="display: inline-block; text-align: center; text-decoration: none; padding: 12px;">Cancel</a>
+        </div>
+    </form>
+</div>
+
+</body>
+</html>

@@ -6,17 +6,91 @@
     <title>Student Details</title>
 
     <style>
+        :root {
+            /* Light theme variables */
+            --bg-color: #f4f6f9;
+            --card-bg: #fff;
+            --text-color: #333;
+            --text-secondary: #666;
+            --border-color: #ddd;
+            --table-hover: #f1f1f1;
+            --primary-color: #667eea;
+            --primary-hover: #5a67d8;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --error-color: #dc3545;
+            --notification-unread: #fff3cd;
+            --shadow: rgba(0, 0, 0, 0.08);
+        }
+
+        [data-theme="dark"] {
+            /* Dark theme variables */
+            --bg-color: #1a1a1a;
+            --card-bg: #2d2d2d;
+            --text-color: #e0e0e0;
+            --text-secondary: #b0b0b0;
+            --border-color: #444;
+            --table-hover: #3a3a3a;
+            --primary-color: #4f46e5;
+            --primary-hover: #4338ca;
+            --success-color: #22c55e;
+            --warning-color: #f59e0b;
+            --error-color: #ef4444;
+            --notification-unread: #451a03;
+            --shadow: rgba(0, 0, 0, 0.3);
+        }
+
         body {
             font-family: 'Segoe UI', sans-serif;
-            background: #f4f6f9;
+            background: var(--bg-color);
             padding: 30px;
             margin: 0;
+            color: var(--text-color);
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: var(--card-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 50px;
+            width: 60px;
+            height: 30px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            padding: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .theme-toggle:hover {
+            box-shadow: 0 2px 8px var(--shadow);
+        }
+
+        .theme-toggle-slider {
+            width: 22px;
+            height: 22px;
+            background: var(--primary-color);
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+        }
+
+        [data-theme="dark"] .theme-toggle-slider {
+            transform: translateX(28px);
         }
 
         .back-button {
             display: inline-block;
             padding: 10px 20px;
-            background: #667eea;
+            background: var(--primary-color);
             color: white;
             text-decoration: none;
             border-radius: 8px;
@@ -26,7 +100,7 @@
         }
 
         .back-button:hover {
-            background: #5a67d8;
+            background: var(--primary-hover);
         }
 
         .container {
@@ -35,21 +109,23 @@
         }
 
         .card {
-            background: #fff;
+            background: var(--card-bg);
             padding: 25px 30px;
             border-radius: 12px;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 8px 20px var(--shadow);
             margin-bottom: 25px;
+            transition: background 0.3s ease, box-shadow 0.3s ease;
         }
 
         h2 {
             margin-bottom: 15px;
-            color: #333;
+            color: var(--text-color);
         }
 
         .student-info p {
             margin: 8px 0;
             font-size: 15px;
+            color: var(--text-secondary);
         }
 
         table {
@@ -61,40 +137,52 @@
         table th,
         table td {
             padding: 12px;
-            border-bottom: 1px solid #ddd;
+            border-bottom: 1px solid var(--border-color);
             text-align: left;
+            color: var(--text-color);
         }
 
         table th {
-            background: #667eea;
+            background: var(--primary-color);
             color: white;
         }
 
         table tr:hover {
-            background: #f1f1f1;
+            background: var(--table-hover);
         }
 
         .no-data {
             text-align: center;
             padding: 15px;
-            color: #888;
+            color: var(--text-secondary);
+        }
+
+        .notification-item.unread {
+            background: var(--notification-unread);
         }
         .btn-home {
             margin-bottom: 20px;
             text-decoration: none;
-            background-color: rgb(43, 57, 135);
+            background-color: var(--primary-color);
             color: white;
             padding: 10px 20px;
             border-radius: 8px;
             transition: background-color 0.3s ease;
         }
         .btn-home:hover {
-            background-color: rgb(20, 28, 58);
+            background-color: var(--primary-hover);
         }
     </style>
 </head>
 
 <body>
+
+    <!-- Theme Toggle Button -->
+    <div class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">
+        <div class="theme-toggle-slider">
+            <span id="theme-icon">🌙</span>
+        </div>
+    </div>
 
     {% include 'messages.html' %}
 
@@ -121,8 +209,10 @@
                 <tr>
                     <th>Book Name</th>
                     <th>Issue Date</th>
+                    <th>Due Date</th>
                     <th>Return Date</th>
                     <th>Status</th>
+                    <th>Fine</th>
                     <th>Actions</th>
                 </tr>
 
@@ -130,33 +220,109 @@
                 <tr>
                     <td>{{ issue.book.title }}</td>
                     <td>{{ issue.issue_date }}</td>
-                    <td>{{ issue.return_date }}</td>
+                    <td>{{ issue.due_date|default:"Not set" }}</td>
+                    <td>{{ issue.return_date|default:"Not returned" }}</td>
 
                     <td>
                         {% if issue.is_returned %}
                         <span style="color: green; font-weight: bold;">Returned ✅</span>
+                        {% elif issue.is_overdue %}
+                        <span style="color: var(--danger-color); font-weight: bold;">Overdue ({{ issue.days_overdue }} days) ❌</span>
                         {% else %}
-                        <span style="color: red; font-weight: bold;">Return Pending ❌</span>
+                        <span style="color: orange; font-weight: bold;">Issued 📖</span>
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        {% if issue.fine_amount > 0 %}
+                        <span style="color: red; font-weight: bold;">₹{{ issue.fine_amount }}</span>
+                        {% else %}
+                        -
                         {% endif %}
                     </td>
 
                     <td>
                         {% if not issue.is_returned %}
-                        <a href="{% url 'return_book' issue.id %}" class="btn btn-primary" style="padding: 5px 10px; background: #28a745; color: white; text-decoration: none; border-radius: 4px;">Mark Returned</a>
+                        <a href="{% url 'return_book' issue.id %}" class="btn btn-primary" style="padding: 5px 10px; background: var(--success-color); color: white; text-decoration: none; border-radius: 4px;">Mark Returned</a>
                         {% endif %}
                     </td>
                 
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="5" class="no-data">No books issued</td>
+                    <td colspan="7" class="no-data">No books issued</td>
                 </tr>
                 {% endfor %}
             </table>
         </div>
+
+        <!-- Notifications -->
+        <div class="card">
+            <h2>🔔 Recent Notifications</h2>
+
+            {% if notifications %}
+            <div class="notifications-list">
+                {% for notification in notifications %}
+                <div class="notification-item{% if not notification.is_read %} unread{% endif %}" style="padding: 10px; border-bottom: 1px solid #eee;">
+                    <div class="notification-header" style="display: flex; justify-content: space-between; align-items: center;">
+                        <span class="notification-type" style="font-weight: bold; text-transform: uppercase; font-size: 12px;">
+                            {% if notification.notification_type == 'overdue' %}
+                                <span style="color: var(--danger-color);">⚠ OVERDUE</span>
+                            {% elif notification.notification_type == 'due_soon' %}
+                                <span style="color: orange;">⏰ DUE SOON</span>
+                            {% elif notification.notification_type == 'returned' %}
+                                <span style="color: green;">✅ RETURNED</span>
+                            {% elif notification.notification_type == 'issued' %}
+                                <span style="color: blue;">📖 ISSUED</span>
+                            {% endif %}
+                        </span>
+                        <span class="notification-date" style="font-size: 12px; color: #666;">{{ notification.created_at|date:"M d, H:i" }}</span>
+                    </div>
+                    <div class="notification-message" style="margin-top: 5px;">
+                        {{ notification.message }}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="no-data">No notifications</p>
+            {% endif %}
+        </div>
+
         <a href="{% url 'home' %}" class="btn btn-secondary btn-home">← Back to Home</a>
 
     </div>
+
+    <script>
+        // Theme toggle functionality
+        function toggleTheme() {
+            const html = document.documentElement;
+            const themeIcon = document.getElementById('theme-icon');
+            
+            if (html.getAttribute('data-theme') === 'dark') {
+                html.removeAttribute('data-theme');
+                themeIcon.textContent = '🌙';
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                themeIcon.textContent = '☀️';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+
+        // Load saved theme on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedTheme = localStorage.getItem('theme');
+            const themeIcon = document.getElementById('theme-icon');
+            
+            if (savedTheme === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                themeIcon.textContent = '☀️';
+            } else {
+                themeIcon.textContent = '🌙';
+            }
+        });
+    </script>
 
 </body>
 

@@ -62,21 +62,26 @@ class BookForm(forms.ModelForm):
 class IssueBookForm(forms.ModelForm):
     class Meta:
         model = IssueBook
-        fields = ['student', 'book', 'return_date']
+        fields = ['student', 'book', 'due_date']
         widgets = {
             'student': forms.Select(attrs={'class': 'form-control'}),
             'book': forms.Select(attrs={'class': 'form-control'}),
-            'return_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+            'due_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
         }
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Set default due date to 7 days from now
+        from datetime import date, timedelta
+        if not self.instance.pk:  # Only for new instances
+            self.fields['due_date'].initial = date.today() + timedelta(days=7)
+        # Make due_date required
+        self.fields['due_date'].required = True
     
     def clean(self):
         cleaned_data = super().clean()
         book = cleaned_data.get('book')
         student = cleaned_data.get('student')
-        
-        # Check if book is available
-        if book and book.available_quantity <= 0:
-            raise ValidationError('This book is not available. No copies left in stock.')
         
         # Check if student already has an unreturned copy of this book
         if student and book:
